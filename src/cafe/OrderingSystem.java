@@ -4,7 +4,12 @@ package cafe;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.Scanner;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 // ---------------------------------------
 
 public class OrderingSystem {
@@ -24,6 +29,41 @@ public class OrderingSystem {
     int menuSize;
     String userName;
     // -------------------------------------------------------
+
+    public void buildMenu(String sourceFile) {
+        if (sourceFile.isBlank())
+            return;
+
+        try {
+            BufferedReader buffer = new BufferedReader(new FileReader(sourceFile));
+
+            Map<Integer, String[]> parsedItems = new HashMap<>();
+            String line;
+
+            int id = 0;
+            while ((line = buffer.readLine()) != null) {
+                parsedItems.put(id, line.split(","));
+                id++;
+
+            }
+
+            System.out.println(parsedItems);
+
+            for (int itemId : parsedItems.keySet()) {
+                String[] itemInfo = parsedItems.get(itemId);
+
+                this.menu.add(new MenuItem(itemId, itemInfo[0].strip(), Boolean.parseBoolean(itemInfo[1].strip()),
+                        Float.parseFloat(itemInfo[2].strip())));
+            }
+            // auto closes buffer
+
+        } catch (IOException e) {
+            System.out.println("Error occured: " + e.getMessage());
+
+        }
+
+        return;
+    }
 
     public void displayMenu() {
         System.out.println(RESET);
@@ -175,7 +215,7 @@ public class OrderingSystem {
                 if (choice == 1) {
                     this.colorConsole("\nchoice: Delete item\n", CYAN, true);
                     if (itemQunty >= 1) {
-                        System.out.printf("\nHow many %s's you want to delete?(should be <= %d, >= 1): ", oldItemName,
+                        System.out.printf("\nHow many %s's you want to delete?(<= %d, >= 1): ", oldItemName,
                                 itemQunty);
                         int removeQunty = userInput.nextInt();
                         userInput.nextLine();
@@ -295,13 +335,7 @@ public class OrderingSystem {
     public static void main(String[] args) {
         OrderingSystem cafeObj = new OrderingSystem();
 
-        cafeObj.menu.add(new MenuItem(0, "Tea", true, 80.20f));
-        cafeObj.menu.add(new MenuItem(1, "Matcha", true, 120.12f));
-        cafeObj.menu.add(new MenuItem(2, "Coffee", true, 80.0f));
-        cafeObj.menu.add(new MenuItem(3, "Filter Coffie", true, 120.12f));
-        cafeObj.menu.add(new MenuItem(4, "Burger", true, 180.99f));
-        cafeObj.menu.add(new MenuItem(5, "Sandwich", true, 150.60f));
-        cafeObj.menu.add(new MenuItem(6, "Masala Tea", true, 90.14f));
+        cafeObj.buildMenu("src/menuItems.txt");
 
         Scanner userIn = new Scanner(System.in);
         cafeObj.menuSize = cafeObj.menu.size();
@@ -315,7 +349,8 @@ public class OrderingSystem {
             cafeObj.confirmOrder(cafeObj.userOrderList, userIn);
             cafeObj.printBill(cafeObj.userOrderList);
 
-            System.out.println("Your order will get ready shortly " + cafeObj.userName + "\n");
+            System.out.println("Your order will get ready shortly " + cafeObj.userName +
+                    "\n");
         } else {
             System.out.println("Alright, visit us again, bye!");
         }
