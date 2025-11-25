@@ -1,0 +1,10 @@
+tea,true,80.20f
+Matcha,true,120.12f
+Coffee,true,80.0f
+Filter Coffie,true,120.12f
+Burger,true,180.99f
+Sandwich,true,150.60f
+Masala Tea,true,90.14f
+Masala Tea,true,90.14f
+Masala Tea,true,90.14f
+Masala Tea,true,90.14f
